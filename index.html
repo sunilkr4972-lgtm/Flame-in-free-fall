@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Flame in Freefall — Data-Powered Fire Safety Insights for the Artemis Era. NASA Space Apps Challenge 2026." />
+<title>Flame in Freefall — Fire Safety Insights</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js" defer></script>
+
+<link rel="stylesheet" href="style.css" />
+<script src="data/data-fallback.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<header class="hero" id="top">
+  <div class="starfield" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-top-row">
+      <span class="badge" aria-label="NASA Space Apps Challenge 2026">
+        <i data-lucide="rocket" aria-hidden="true"></i>
+        NASA Space Apps Challenge 2026 · Mission Safety AI
+      </span>
+      <div class="audio-control">
+        <button class="btn-audio" id="audioToggleBtn" data-action="toggle-audio" aria-label="Toggle Mission Audio FX" title="Toggle Mission Audio FX">
+          <i data-lucide="volume-2" id="audioIcon" aria-hidden="true"></i>
+          <span id="audioText">Audio FX: ON</span>
+        </button>
+        <button class="btn-audio theme-toggle" id="themeToggleBtn" data-action="toggle-theme" aria-label="Switch to light mode" title="Switch to light mode" aria-pressed="false">
+          <i data-lucide="sun" id="themeIcon" aria-hidden="true"></i>
+          <span id="themeText">Light mode</span>
+        </button>
+      </div>
+    </div>
+    <h1 class="hero-title">Flame in Freefall</h1>
+    <p class="hero-sub">Simple fire-safety guidance for space missions</p>
+    <p class="hero-copy">
+      Ask a question, choose a mission, or explore NASA fire experiments. The assistant turns research data into clear, practical insights.
+    </p>
+
+    <div class="stat-pills" id="statPills" aria-live="polite">
+      <div class="stat-pill"><span class="stat-num" data-count="0">0</span><span class="stat-label">Investigations</span></div>
+      <div class="stat-pill"><span class="stat-num" data-count="0">0</span><span class="stat-label">Samples</span></div>
+      <div class="stat-pill"><span class="stat-num" data-count="0">0%</span><span class="stat-label">Max O₂</span></div>
+      <div class="stat-pill"><span class="stat-num" data-count="0">0</span><span class="stat-label">Years Spanned</span></div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="#si-panel" class="btn btn-primary">
+        <i data-lucide="sparkles" aria-hidden="true"></i> Ask the AI Assistant
+      </a>
+      <button class="btn btn-accent" data-action="quick-auto-decide" id="heroAutoDecideBtn">
+        <i data-lucide="zap" aria-hidden="true"></i> Get a Mission Recommendation
+      </button>
+      <a href="#cardsRegion" class="btn btn-ghost">
+        <i data-lucide="layout-grid" aria-hidden="true"></i> Explore Experiments
+      </a>
+    </div>
+  </div>
+</header>
+
+<nav class="scenario-bar" aria-label="Choose a mission">
+  <div class="scenario-bar-inner">
+    <div class="scenario-bar-left">
+      <span class="scenario-select-label">Choose your mission</span>
+      <div class="scenario-pills" id="scenarioPills" role="tablist" aria-label="Mission options"></div>
+      <p class="scenario-context" id="scenarioContext" aria-live="polite">
+        Focus: ISS fire prevention, detection, suppression
+      </p>
+    </div>
+    <div class="scenario-bar-right">
+      <button class="btn btn-accent btn-sm" data-action="quick-auto-decide" id="scenarioAutoDecideBtn" title="Auto-decide optimal fire safety configuration for this mission">
+        <i data-lucide="zap" aria-hidden="true"></i> Auto-Decide Pair
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+
+  <nav class="quick-nav" aria-label="Main tools">
+    <span class="quick-nav-label">Quick access</span>
+    <a href="#si-panel"><i data-lucide="sparkles" aria-hidden="true"></i> Ask AI</a>
+    <button class="quick-nav-button" data-action="generate-brief"><i data-lucide="file-text" aria-hidden="true"></i> Mission Brief</button>
+    <a href="#simulator"><i data-lucide="flame" aria-hidden="true"></i> Fire Simulator</a>
+    <a href="#cardsRegion"><i data-lucide="layout-grid" aria-hidden="true"></i> Experiments</a>
+    <a href="#analytics-title"><i data-lucide="bar-chart-3" aria-hidden="true"></i> Charts</a>
+  </nav>
+
+  <section class="si-panel" id="si-panel" aria-labelledby="si-title">
+    <div class="section-head">
+      <h2 id="si-title"><i data-lucide="sparkles" aria-hidden="true"></i> AI Mission Assistant</h2>
+      <p>Ask in plain language. Get answers from the NASA experiment dataset — no sign-in or cloud connection needed.</p>
+    </div>
+    <div class="si-input-wrap">
+      <input type="text" id="siInput" placeholder="Try: Which experiment is best for a Moon base?" aria-label="Ask the AI mission assistant" />
+      <button class="btn btn-primary" data-action="si-ask"><i data-lucide="send" aria-hidden="true"></i> Ask</button>
+    </div>
+    <div class="si-suggestions" id="siSuggestions"></div>
+    <div class="si-answers" id="siAnswers" aria-live="polite"></div>
+  </section>
+
+  <section class="analytics" aria-labelledby="analytics-title">
+    <div class="analytics-header">
+      <div class="section-head">
+        <h2 id="analytics-title">Mission Analytics</h2>
+        <p>Charts summarize the current filters; your mission is highlighted in the comparison chart.</p>
+      </div>
+      <label class="analytics-mission-select">
+        <span>Mission profile</span>
+        <select id="analyticsScenarioSelect" aria-label="Choose mission for analytics"></select>
+      </label>
+    </div>
+    <div class="analytics-grid">
+      <div class="chart-card"><h3>Fuel Type Mix</h3><canvas id="chartFuel" aria-label="Fuel type doughnut chart" role="img"></canvas></div>
+      <div class="chart-card"><h3>O₂ Coverage per Investigation</h3><canvas id="chartO2" aria-label="Oxygen coverage bar chart" role="img"></canvas></div>
+      <div class="chart-card"><h3>Scenario Relevance Coverage</h3><canvas id="chartScenario" aria-label="Scenario relevance horizontal bar chart" role="img"></canvas></div>
+      <div class="chart-card"><h3>Flame Temp vs Limiting O₂ (LOC)</h3><canvas id="chartFlameLoc" aria-label="Flame Temperature vs Limiting Oxygen chart" role="img"></canvas></div>
+      <div class="chart-card chart-card-wide"><h3>Year vs Max O₂ (bubble = samples)</h3><canvas id="chartScatter" aria-label="Year versus oxygen scatter chart" role="img"></canvas></div>
+    </div>
+  </section>
+
+  <section id="innovation-lab" class="innovation-lab" aria-labelledby="lab-title">
+    <div class="lab-head">
+      <div>
+        <span class="lab-eyebrow"><i data-lucide="flask-conical" aria-hidden="true"></i> Innovation Lab</span>
+        <h2 id="lab-title">Mission Tools</h2>
+        <p class="lab-sub">Quickly check fire risks, research gaps, and equipment ideas for your selected mission.</p>
+      </div>
+      <button class="btn btn-primary btn-lg" data-action="generate-brief" id="briefBtn">
+        <i data-lucide="file-text" aria-hidden="true"></i> Generate Mission Brief
+      </button>
+    </div>
+
+    <div class="lab-grid">
+
+      <article class="lab-card lab-card-sandbox" id="simulator">
+        <div class="lab-card-head">
+          <span class="lab-icon lab-icon-cyan"><i data-lucide="sliders" aria-hidden="true"></i></span>
+          <div>
+            <h3>Fire Simulator</h3>
+            <p>Adjust oxygen, pressure, fuel, airflow, and gravity to explore how fire behavior can change.</p>
+          </div>
+        </div>
+        <div class="sandbox">
+          <div class="sandbox-flame-preview">
+            <div class="flame-canvas-header">
+              <span class="flame-canvas-title"><i data-lucide="flame" style="width:14px;height:14px;vertical-align:-2px"></i> Live animated flame simulation</span>
+              <span class="flame-mode-tag" id="sandboxFlameTag">Spherical Blue Micro-Orb</span>
+            </div>
+            <div class="flame-canvas-stage">
+              <canvas id="sandboxFlameCanvas" width="500" height="220" aria-label="Animated flame simulation responding to selected conditions"></canvas>
+            </div>
+            <div class="flame-canvas-footer">
+              <span id="flameSimTemp">Temp: ~1650 K</span>
+              <span id="flameSimRad">Radiative Loss: ~38%</span>
+              <span id="flameSimAirflow">Airflow: 0.2 m/s</span>
+              <button class="btn-canvas-toggle" id="toggleGravityBtn" data-action="toggle-gravity" title="Toggle Earth gravity and microgravity">
+                <i data-lucide="repeat" style="width:12px;height:12px;vertical-align:-1px"></i> <span id="gravityModeText">View Earth 1G</span>
+              </button>
+              <button class="btn-canvas-toggle" data-action="reset-simulation" title="Restore default simulation conditions">
+                <i data-lucide="rotate-ccw" style="width:12px;height:12px;vertical-align:-1px"></i> Reset
+              </button>
+            </div>
+          </div>
+          <div class="sandbox-controls">
+            <label class="slider-row">
+              <span>O₂ concentration</span>
+              <input type="range" id="sandboxO2" min="15" max="100" value="30" aria-label="Oxygen concentration" />
+              <output id="sandboxO2Val">30%</output>
+            </label>
+            <label class="slider-row">
+              <span>Pressure</span>
+              <input type="range" id="sandboxPressure" min="3" max="15" step="0.1" value="10.2" aria-label="Pressure in psi" />
+              <output id="sandboxPressureVal">10.2 psi</output>
+            </label>
+            <label class="slider-row">
+              <span>Airflow</span>
+              <input type="range" id="sandboxAirflow" min="0" max="2" step="0.1" value="0.2" aria-label="Airflow in meters per second" />
+              <output id="sandboxAirflowVal">0.2 m/s</output>
+            </label>
+            <label class="slider-row">
+              <span>Fuel type</span>
+              <select id="sandboxFuel" aria-label="Fuel type">
+                <option value="liquid">Liquid (Heptane / Droplet)</option>
+                <option value="solid">Solid (PMMA / SIBAL Cloth)</option>
+                <option value="gaseous">Gas (Methane / Propane)</option>
+              </select>
+            </label>
+            <div id="sandboxVerdict" class="sandbox-verdict" aria-live="polite"></div>
+            <p class="sandbox-note">Illustrative model based on selected conditions; not flight-certified. Confirm decisions against primary research.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="lab-card lab-card-gap">
+        <div class="lab-card-head">
+          <span class="lab-icon lab-icon-warn"><i data-lucide="alert-triangle" aria-hidden="true"></i></span>
+          <div>
+            <h3>What hasn't been tested?</h3>
+            <p>See the missing research for this mission.</p>
+          </div>
+        </div>
+        <div id="gapAnalysis" class="gap-list" aria-live="polite">
+          <div class="skeleton-mini"></div>
+          <div class="skeleton-mini"></div>
+        </div>
+      </article>
+
+      <article class="lab-card lab-card-priority">
+        <div class="lab-card-head">
+          <span class="lab-icon lab-icon-flame"><i data-lucide="target" aria-hidden="true"></i></span>
+          <div>
+            <h3>What should be tested next?</h3>
+            <p>Explore the highest-priority research areas.</p>
+          </div>
+        </div>
+        <div id="priorityEngine" class="priority-list" aria-live="polite">
+          <div class="skeleton-mini"></div>
+        </div>
+      </article>
+
+      <article class="lab-card lab-card-coverage">
+        <div class="lab-card-head">
+          <span class="lab-icon lab-icon-ok"><i data-lucide="map" aria-hidden="true"></i></span>
+          <div>
+            <h3>Research Coverage</h3>
+            <p>See how much research supports this mission.</p>
+          </div>
+        </div>
+        <div id="coverageMap" class="coverage-map" aria-live="polite"></div>
+      </article>
+
+      <article class="lab-card lab-card-design">
+        <div class="lab-card-head">
+          <span class="lab-icon lab-icon-design"><i data-lucide="wrench" aria-hidden="true"></i></span>
+          <div>
+            <h3>Equipment Ideas</h3>
+            <p>Fire-safety equipment suggestions based on NASA data.</p>
+          </div>
+        </div>
+        <div id="designRecs" class="design-recs" aria-live="polite">
+          <div class="skeleton-mini"></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="filters" aria-labelledby="filters-title">
+    <h2 id="filters-title" class="sr-only">Filters and search</h2>
+    <div class="filter-grid">
+      <label class="search-wrap">
+        <i data-lucide="search" aria-hidden="true"></i>
+        <input type="search" id="searchInput" placeholder="Search investigations, fuels, tags…" aria-label="Search investigations" />
+      </label>
+      <select id="fuelFilter" aria-label="Filter by fuel type"><option value="">All fuel types</option></select>
+      <select id="facilityFilter" aria-label="Filter by facility"><option value="">All facilities</option></select>
+      <select id="airflowFilter" aria-label="Filter by airflow"><option value="">All airflow</option></select>
+      <select id="gravityFilter" aria-label="Filter by gravity"><option value="">All gravity</option></select>
+      <button class="btn btn-ghost" data-action="reset-filters" aria-label="Reset all filters">
+        <i data-lucide="rotate-ccw" aria-hidden="true"></i> Reset
+      </button>
+    </div>
+    <p class="result-count" id="resultCount" aria-live="polite">Loading…</p>
+  </section>
+
+  <section id="cardsRegion" aria-live="polite" aria-busy="true">
+    <div class="card-grid" id="cardGrid"></div>
+    <div id="emptyState" class="empty-state hidden">
+      <i data-lucide="search-x" aria-hidden="true"></i>
+      <h3>No investigations match</h3>
+      <p>Try widening your filters, clearing search, or resetting.</p>
+      <button class="btn btn-primary" data-action="reset-filters">Reset filters</button>
+    </div>
+    <div id="errorState" class="empty-state hidden" role="alert">
+      <i data-lucide="alert-triangle" aria-hidden="true"></i>
+      <h3>Couldn't load data</h3>
+      <p id="errorMsg">The investigations JSON could not be fetched.</p>
+      <button class="btn btn-primary" data-action="retry-load">Retry</button>
+    </div>
+  </section>
+
+  <section class="spinoffs" aria-labelledby="spinoffs-title">
+    <div class="section-head">
+      <h2 id="spinoffs-title">Earth Spin-offs</h2>
+      <p>What microgravity fire science gives back to Earth — mapped to real products.</p>
+    </div>
+    <div class="spinoff-grid" id="spinoffGrid"></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <strong>Flame in Freefall</strong>
+      <p>Built for the <a href="https://www.spaceappschallenge.org/" target="_blank" rel="noopener">NASA Space Apps Challenge 2026</a>.</p>
+    </div>
+    <div>
+      <p>Data source: <a href="https://psi.nasa.gov/" target="_blank" rel="noopener">NASA PSI Database</a> (public, 24 combustion experiments, ~12 TB). Values normalized for demo purposes — hackathon prototype, not flight-certified.</p>
+    </div>
+    <div>
+      <p>Team credits: <em>your names here</em> · Hackathon prototype · No warranty.</p>
+    </div>
+  </div>
+</footer>
+
+<div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="false"></div>
+
+<div class="modal-backdrop" id="detailBackdrop" hidden></div>
+<aside class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+  <div class="modal-inner" id="modalBody"></div>
+</aside>
+
+<div class="modal-backdrop" id="compareBackdrop" hidden></div>
+<aside class="modal modal-compare" id="compareModal" role="dialog" aria-modal="true" aria-labelledby="compareTitle" hidden>
+  <div class="modal-inner" id="compareBody"></div>
+</aside>
+
+<div class="modal-backdrop" id="briefBackdrop" hidden></div>
+<aside class="modal modal-brief" id="briefModal" role="dialog" aria-modal="true" aria-labelledby="briefTitle" hidden>
+  <div class="modal-inner" id="briefBody"></div>
+</aside>
+
+<div class="compare-bar" id="compareBar" hidden>
+  <span id="compareBarText">0 selected</span>
+  <button class="btn btn-primary" id="compareBtn" data-action="open-compare" disabled>
+    <i data-lucide="git-compare" aria-hidden="true"></i> Compare &amp; Auto-Decide
+  </button>
+  <button class="btn btn-accent btn-sm" id="autoPairBtn" data-action="auto-pair-compare" title="Automatically pick top rival">
+    <i data-lucide="sparkles" aria-hidden="true"></i> Auto-Pair Rival
+  </button>
+  <button class="btn btn-ghost" data-action="clear-compare" aria-label="Clear comparison selection">
+    <i data-lucide="x" aria-hidden="true"></i>
+  </button>
+</div>
+
+</body>
+</html>
